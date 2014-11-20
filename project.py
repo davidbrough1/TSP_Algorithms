@@ -48,19 +48,17 @@ class CSE6140Project(object):
         Helper function to calculated weights from geo coordinates.
         '''
         edge_weights = []
-        earth_r = 6371
+        PI = 3.141592
+        earth_r = 6378.388
         for node_i in tuple_node_locaitons:
             for node_j in tuple_node_locaitons:
                 if node_j[0] > node_i[0]:
-                    del_phi = (node_j[1] - node_j[1]) * math.pi / 180
-                    del_lambda = (node_j[2] - node_i[2]) * math.pi / 180
-                    phi_1 = node_j[1] * math.pi / 180
-                    phi_2 = node_i[1] * math.pi / 180
-                    a = math.sin(del_phi / 2) ** 2 + math.cos(phi_1) * \
-                        math.cos(phi_2) * math.sin(del_lambda / 2) ** 2
-                    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-                    weight = earth_r * c
-                    edge_weights.append((node_j[0], node_i[0], weight))
+                    q1 = math.cos((node_j[2] - node_i[2]) * PI / 180.)
+                    q2 = math.cos((node_j[1] - node_i[1]) * PI / 180.)
+                    q3 = math.cos((node_j[1] + node_i[1]) * PI / 180.)
+                    weight = earth_r * math.acos(0.5 * ((1.0 + q1) * q2
+                                                 - (1.0 - q1) * q3)) + 1.0
+                    edge_weights.append((node_j[0], node_i[0], round(weight)))
         return edge_weights
 
     def _get_euclidean_weights(self, tuple_node_locaitons):
@@ -73,8 +71,5 @@ class CSE6140Project(object):
                 if node_j[0] > node_i[0]:
                     weight = math.sqrt((node_j[1] - node_i[1]) ** 2 +
                                        (node_j[2] - node_i[2]) ** 2)
-                    edge_weights.append((node_i[0], node_j[0], weight))
+                    edge_weights.append((node_i[0], node_j[0], round(weight)))
         return edge_weights
-
-
-
