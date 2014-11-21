@@ -13,7 +13,7 @@ class genetic_algorithm():
 		s.total_generations = 100
 		s.pop_size = 50
 		s.tournament_size = 6
-		s.mutation_rate = 0.02
+		s.mutation_rate = 0.015
 
 	def shuffle_tour(s):
 		arrangement = range(1, s.G.number_of_nodes()+1)
@@ -94,7 +94,7 @@ class genetic_algorithm():
 
 
 G = CSE6140Project()
-G.load_file('burma14.tsp')
+G.load_file('ch150.tsp')
 print G.parameters
 ga = genetic_algorithm(G)
 ga.main()
