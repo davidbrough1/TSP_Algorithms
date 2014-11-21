@@ -1,3 +1,6 @@
+from __future__ import division
+
+
 import networkx as nx
 import math
 
@@ -37,11 +40,19 @@ class CSE6140Project(object):
         '''
         tuple_node_locations = [(int(x.split()[0]), float(x.split()[1]),
                                  float(x.split()[2])) for x in node_locations]
+        #print tuple_node_locations
+        #raw_input("")
         if edge_weight_type[:3] == 'GEO':
             weights = self._get_geo_weights(tuple_node_locations)
         else:
             weights = self._get_euclidean_weights(tuple_node_locations)
         return weights
+
+    def _radians(self, x):
+        PI = 3.141592
+        deg = int(x)
+        min = x- deg
+        return PI * (deg + 5.0 * min/ 3.0) / 180.0
 
     def _get_geo_weights(self, tuple_node_locaitons):
         '''
@@ -53,9 +64,10 @@ class CSE6140Project(object):
         for node_i in tuple_node_locaitons:
             for node_j in tuple_node_locaitons:
                 if node_j[0] > node_i[0]:
-                    q1 = math.cos((node_j[2] - node_i[2]) * PI / 180.)
-                    q2 = math.cos((node_j[1] - node_i[1]) * PI / 180.)
-                    q3 = math.cos((node_j[1] + node_i[1]) * PI / 180.)
+                    q1 = math.cos((self._radians(node_j[2]) - self._radians(node_i[2])))
+                    q2 = math.cos((self._radians(node_j[1]) - self._radians(node_i[1])))
+                    q3 = math.cos((self._radians(node_j[1]) + self._radians(node_i[1])))
+                    
                     weight = earth_r * math.acos(0.5 * ((1.0 + q1) * q2
                                                  - (1.0 - q1) * q3)) + 1.0
                     edge_weights.append((node_j[0], node_i[0], round(weight)))
