@@ -10,10 +10,10 @@ class genetic_algorithm():
 
 	def __init__(s, G):
 		s.G = G.Graph		
-		s.total_generations = 50
+		s.total_generations = 100
 		s.pop_size = 50
 		s.tournament_size = 6
-		s.mutation_rate = 0.015
+		s.mutation_rate = 0.02
 
 	def shuffle_tour(s):
 		arrangement = range(1, s.G.number_of_nodes()+1)
@@ -69,12 +69,15 @@ class genetic_algorithm():
 			parent2 = s.tournament_select(deepcopy(population))
 			
 			new_pop.append(s.crossover(parent1, parent2))
-		"""
+		count = 0
 		for i in xrange(s.pop_size):
 			for j in xrange(len(new_pop[i])):
-				if 
-		"""
+				if random.random() < s.mutation_rate:
+					k = random.randint(0, len(new_pop[i])-1)
 
+					new_pop[i][j], new_pop[i][k] = new_pop[i][k], new_pop[i][j]
+					count += 1
+		#print count,
 		return new_pop
 
 
@@ -91,7 +94,7 @@ class genetic_algorithm():
 
 
 G = CSE6140Project()
-G.load_file('berlin52.tsp')
-
+G.load_file('burma14.tsp')
+print G.parameters
 ga = genetic_algorithm(G)
 ga.main()
