@@ -2,8 +2,9 @@ from copy import deepcopy
 from project import CSE6140Project
 
 import networkx as nx
+import numpy as np
 import random
-
+import time
 
 class genetic_algorithm():
 
@@ -89,12 +90,26 @@ class genetic_algorithm():
 			print i, s.get_cost(s.find_fittest(population))
 			
 			population = s.evolve(deepcopy(population))
+		final_cost = s.get_cost(s.find_fittest(population))
+		print "Final Cost: ", final_cost
 
-		print "Final Cost: ", s.get_cost(s.find_fittest(population))
+		return final_cost
 
+output = []
+times = []
 
 G = CSE6140Project()
-G.load_file('ch150.tsp')
+G.load_file('kroA100.tsp')
 print G.parameters
-ga = genetic_algorithm(G)
-ga.main()
+for i in xrange(5):
+	ga = genetic_algorithm(G)
+	start_time = time.time()
+	output.append(ga.main())
+	end_time = time.time()
+	times.append(end_time-start_time)
+print output
+print np.mean(output)
+
+print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
+print times
+print np.mean(times)
