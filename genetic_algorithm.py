@@ -74,9 +74,23 @@ class genetic_algorithm():
 		for i in xrange(s.pop_size):
 			for j in xrange(len(new_pop[i])):
 				if random.random() < s.mutation_rate:
-					k = random.randint(0, len(new_pop[i])-1)
+					#k = random.randint(0, len(new_pop[i])-1)
+					#print new_pop[i],
+					old_cost = s.get_cost(new_pop[i])
+					new_cost = old_cost + 1
 
-					new_pop[i][j], new_pop[i][k] = new_pop[i][k], new_pop[i][j]
+					check = 1
+					while(new_cost>old_cost):
+						indices = random.sample(range(len(new_pop[i])),2)
+						i1,i2 = min(indices), max(indices)
+						mutated_tour = new_pop[i][:i1] + [c for c in reversed(new_pop[i][i1:i2+1])] + new_pop[i][i2+1:]
+						new_cost = s.get_cost(mutated_tour)
+						check +=1
+						if check>100:
+							break
+					new_pop[i] = mutated_tour
+					#print new_pop[i],i1,i2
+					#new_pop[i][j], new_pop[i][k] = new_pop[i][k], new_pop[i][j]
 					count += 1
 		#print count,
 		return new_pop
@@ -95,21 +109,24 @@ class genetic_algorithm():
 
 		return final_cost
 
-output = []
-times = []
 
-G = CSE6140Project()
-G.load_file('kroA100.tsp')
-print G.parameters
-for i in xrange(5):
-	ga = genetic_algorithm(G)
-	start_time = time.time()
-	output.append(ga.main())
-	end_time = time.time()
-	times.append(end_time-start_time)
-print output
-print np.mean(output)
+def run_genetic_algorithm(filename,random_seed):
+	##output = []
+	##times = []
+	random.seed(random_seed)
+	
+	G = CSE6140Project()
+	G.load_file(filename)
+	print G.parameters
+	for i in xrange(5):
+		ga = genetic_algorithm(G)
+		start_time = time.time()
+		output.append(ga.main())
+		end_time = time.time()
+		times.append(end_time-start_time)
+	print output
+	print np.mean(output)
 
-print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
-print times
-print np.mean(times)
+	print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
+	print times
+	print np.mean(times)
