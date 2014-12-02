@@ -9,17 +9,14 @@ def simulated_annealing(G):
     edge_dict = _make_edge_dict(list(G.edges_iter(data=True)))
     temp = 0.9999
     initial_state = _get_solution(G)
-    print 'intial weights', _get_solution_weights(initial_state)
     state = initial_state
     solution_steady_state_count = 0
-    while solution_steady_state_count < 40:
+    while solution_steady_state_count < len(initial_state) * 3:
         new_state, temp = _annealing(state, edge_dict, temp)
         if new_state == state:
             solution_steady_state_count += 1
         state = new_state
-    print time.time() - t_start, _get_solution_weights(state)
-    if _get_solution_weights(state) < 3323:
-        print state
+    return _get_solution_weights(state), time.time() - t_start
 
 
 def _annealing(state, edge_dict, temp):
@@ -84,30 +81,32 @@ def _get_edge_pair(edge_list):
     return (edge_list[edge_indices[0]], edge_list[edge_indices[1]])
 
 
-def _get_new_edge_pair(edge_1, edge_2, edge_dict):
+def _get_new_edge_pair(edge_0, edge_1, edge_dict):
     '''
     '''
-    new_keys = _get_new_keys(edge_1, edge_2, edge_dict)
+    new_keys = _get_new_keys(edge_0, edge_1, edge_dict)
     edge_0_weight = edge_dict[new_keys[0]]
     edge_1_weight = edge_dict[new_keys[1]]
     return new_keys[0] + (edge_0_weight,), new_keys[1] + (edge_1_weight,)
 
 
-def _get_new_keys(edge_1, edge_2, edge_dict):
-    if edge_1[0] == edge_2[1] and edge_1[1] == edge_2[0] or \
-            edge_1[0] == edge_2[0] and edge_1[1] == edge_2[1]:
-        return _check_key(edge_1[:-1], edge_2[:-1], edge_dict)
-    elif edge_1[0] == edge_2[0] or edge_1[1] == edge_2[1]:
-        key1 = _check_key((edge_1[1], edge_2[0]), edge_dict)
-        key0 = _check_key((edge_1[0], edge_2[1]), edge_dict)
+def _get_new_keys(edge_0, edge_1, edge_dict):
+    if edge_0[0] == edge_1[1] and edge_0[1] == edge_1[0] or \
+            edge_0[0] == edge_1[0] and edge_0[1] == edge_1[1]:
+        key0 = _check_key(edge_0[:-1], edge_dict)
+        key1 = _check_key(edge_0[:-1], edge_dict)
         return key0, key1
-    elif edge_1[0] == edge_2[1] or edge_1[1] == edge_2[0]:
-        key1 = _check_key((edge_1[1], edge_2[1]), edge_dict)
-        key0 = _check_key((edge_1[0], edge_2[0]), edge_dict)
+    elif edge_0[0] == edge_1[0] or edge_0[1] == edge_1[1]:
+        key1 = _check_key((edge_0[1], edge_1[0]), edge_dict)
+        key0 = _check_key((edge_0[0], edge_1[1]), edge_dict)
+        return key0, key1
+    elif edge_0[0] == edge_1[1] or edge_0[1] == edge_1[0]:
+        key1 = _check_key((edge_0[1], edge_1[1]), edge_dict)
+        key0 = _check_key((edge_0[0], edge_1[0]), edge_dict)
         return key0, key1
     else:
-        key1 = _check_key((edge_1[1], edge_2[1]), edge_dict)
-        key0 = _check_key((edge_1[0], edge_2[0]), edge_dict)
+        key1 = _check_key((edge_0[1], edge_1[1]), edge_dict)
+        key0 = _check_key((edge_0[0], edge_1[0]), edge_dict)
         return key0, key1
 
 

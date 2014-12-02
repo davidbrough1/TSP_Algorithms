@@ -1,7 +1,7 @@
 import Queue as q
 import time
 import networkx as nx
-
+import random as random
 
 def approximation(G):
     t_start = time.time()
@@ -33,7 +33,6 @@ def _get_path_edge_list(path_nodes, edge_list):
             node_i = path_nodes[i]
             node_i_plus = path_nodes[(i + 1) % n_nodes]
             if edge[0] == node_i and edge[1] == node_i_plus:
-                    'made it again \n'
                     path.append((edge[0], edge[1], edge[2]['weight']))
             elif edge[1] == node_i and edge[0] == node_i_plus:
                     path.append((edge[1], edge[0], edge[2]['weight']))
@@ -43,7 +42,9 @@ def _get_path_edge_list(path_nodes, edge_list):
 def _depth_first_search(edge_list):
     G_tmp = nx.Graph()
     G_tmp.add_weighted_edges_from(edge_list)
-    path_sequence = list(nx.dfs_preorder_nodes(G_tmp, edge_list[0][0]))
+    edge_index = random.randint(0, len(edge_list) - 1)
+    path_sequence = list(nx.dfs_preorder_nodes(G_tmp,
+                                               edge_list[edge_index][0]))
     return path_sequence
 
 

@@ -17,22 +17,29 @@ def test():
     print 'Number of Edges', project.Graph.number_of_edges()
 
 
-def test_approx():
+def test_approx(file_name):
     project = CSE6140Project()
-    project.load_file('ulysses16.tsp')
+    project.load_file(file_name)
     opt_cost = float(project.parameters['optimal_cost'])
     solution = approximation(project.Graph)
     print project.parameters['name']
-    print solution
     print opt_cost
+    print solution
     print (solution[0] - opt_cost) / opt_cost
 
 
-def test_simulated_annealing():
+def test_simulated_annealing(file_name):
     project = CSE6140Project()
-    project.load_file('burma14.tsp')
+    project.load_file(file_name)
     solution = simulated_annealing(project.Graph)
-
+    opt_cost = float(project.parameters['optimal_cost'])
+    print solution
+    print (solution[0] - opt_cost) / opt_cost
 
 if __name__ == '__main__':
-    test_simulated_annealing()
+    file_list = ['burma14.tsp', 'ulysses16.tsp', 'berlin52.tsp',
+                 'kroA100.tsp', 'ch150.tsp', 'gr202.tsp']
+    for file_name in file_list:
+        test_approx(file_name)
+        test_simulated_annealing(file_name)
+        print ''
