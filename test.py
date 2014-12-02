@@ -21,7 +21,7 @@ def test_approx(file_name):
     project = CSE6140Project()
     project.load_file(file_name)
     opt_cost = float(project.parameters['optimal_cost'])
-    solution = approximation(project.Graph)
+    solution = approximation(project.Graph, 5, 7)
     print project.parameters['name']
     print opt_cost
     print solution
@@ -31,7 +31,7 @@ def test_approx(file_name):
 def test_simulated_annealing(file_name):
     project = CSE6140Project()
     project.load_file(file_name)
-    solution = simulated_annealing(project.Graph)
+    solution = simulated_annealing(project.Graph, 300, 7)
     opt_cost = float(project.parameters['optimal_cost'])
     print solution
     print (solution[0] - opt_cost) / opt_cost

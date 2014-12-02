@@ -3,13 +3,23 @@ import time
 import networkx as nx
 import random as random
 
-def approximation(G):
+
+def approximation(G, cutoff, random_seed):
+    '''
+    This method takes in a graph and uses the MST approximation algorithm to
+    find an approximate solution to TSP for a given tree.
+    '''
     t_start = time.time()
+    random.seed(random_seed)
     solution = _get_solution(G)
     return _get_solution_weights(solution), time.time() - t_start
 
 
 def _get_solution(G):
+    '''
+    This helper function returns the results from the MST approximation
+    algorithm.
+    '''
     MST_edges = Kruskal(G)
     reverse_edges = [(x[1], x[0], x[2]) for x in MST_edges]
     edge_list = MST_edges + reverse_edges
@@ -19,6 +29,9 @@ def _get_solution(G):
 
 
 def _get_solution_weights(solution):
+    '''
+    This function retuns the sum weights of a solution.
+    '''
     weight = 0
     for edge in solution:
         weight += edge[2]
@@ -26,6 +39,9 @@ def _get_solution_weights(solution):
 
 
 def _get_path_edge_list(path_nodes, edge_list):
+    '''
+    This function get get the weights for the node path.
+    '''
     path = []
     n_nodes = len(path_nodes)
     for edge in edge_list:
@@ -40,6 +56,10 @@ def _get_path_edge_list(path_nodes, edge_list):
 
 
 def _depth_first_search(edge_list):
+    '''
+    This function does a depth first search of a graph with a random node
+    selected as the root of a tree representing the graph.
+    '''
     G_tmp = nx.Graph()
     G_tmp.add_weighted_edges_from(edge_list)
     edge_index = random.randint(0, len(edge_list) - 1)
@@ -50,7 +70,7 @@ def _depth_first_search(edge_list):
 
 def Kruskal(G):
     '''
-    Kruskal' Algorithm
+    Kruskal' Algorithm - returns MST of the given graph G.
 
     1. Create a priority queue E with all edges with the weights as the key.
     2. Create empty list L that will be the list of connected nodes
