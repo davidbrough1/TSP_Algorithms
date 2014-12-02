@@ -1,5 +1,6 @@
 from project import CSE6140Project
 from approximation import approximation
+from simulated_annealing import simulated_annealing
 
 
 def test():
@@ -26,5 +27,12 @@ def test_approx():
     print opt_cost
     print (solution[0] - opt_cost) / opt_cost
 
+
+def test_simulated_annealing():
+    project = CSE6140Project()
+    project.load_file('burma14.tsp')
+    solution = simulated_annealing(project.Graph)
+
+
 if __name__ == '__main__':
-    test_approx()
+    test_simulated_annealing()

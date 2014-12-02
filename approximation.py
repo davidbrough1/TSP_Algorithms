@@ -5,14 +5,17 @@ import networkx as nx
 
 def approximation(G):
     t_start = time.time()
-    MST_edges = Kruskal(G)
+    solution = _get_solution(G)
+    return _get_solution_weights(solution), time.time() - t_start
 
+
+def _get_solution(G):
+    MST_edges = Kruskal(G)
     reverse_edges = [(x[1], x[0], x[2]) for x in MST_edges]
     edge_list = MST_edges + reverse_edges
     path_nodes = _depth_first_search(edge_list)
     edge_list = G.edges(data=True)
-    solution = _get_path_edge_list(path_nodes, edge_list)
-    return _get_solution_weights(solution), time.time() - t_start
+    return _get_path_edge_list(path_nodes, edge_list)
 
 
 def _get_solution_weights(solution):
