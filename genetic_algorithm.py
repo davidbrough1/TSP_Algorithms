@@ -104,20 +104,26 @@ class genetic_algorithm():
 			print i, s.get_cost(s.find_fittest(population))
 			
 			population = s.evolve(deepcopy(population))
-		final_cost = s.get_cost(s.find_fittest(population))
+		
+		best_tour = s.find_fittest(population)
+		final_cost = s.get_cost(best_tour)
 		print "Final Cost: ", final_cost
-
-		return final_cost
+		return best_tour,final_cost
 
 
 def run_genetic_algorithm(filename,random_seed):
-	##output = []
-	##times = []
+	
 	random.seed(random_seed)
 	
 	G = CSE6140Project()
 	G.load_file(filename)
 	print G.parameters
+	ga = genetic_algorithm(G)
+	best_tour,final_cost = ga.main()
+
+	"""
+	output = []
+	times = []
 	for i in xrange(5):
 		ga = genetic_algorithm(G)
 		start_time = time.time()
@@ -126,7 +132,8 @@ def run_genetic_algorithm(filename,random_seed):
 		times.append(end_time-start_time)
 	print output
 	print np.mean(output)
-
 	print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
 	print times
 	print np.mean(times)
+	"""
+	return best_tour,final_cost
