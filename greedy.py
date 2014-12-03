@@ -50,10 +50,19 @@ class greedy():
 
 			s.tour = s.tour[:split_idx+1] + [r] + s.tour[split_idx+1:]
 
-		print s.tour_cost(s.tour)
+		best_tour = s.tour
+		final_cost = s.tour_cost(best_tour)
 
-G = CSE6140Project()
-G.load_file('kroA100.tsp')
-print G.parameters['optimal_cost']
-gred = greedy(G)
-gred.main()
+		print "Final Cost: ", final_cost
+		return best_tour,final_cost
+
+def run_greedy_algorithm(filename,random_seed):
+	
+	random.seed(random_seed)
+	
+	G = CSE6140Project()
+	G.load_file(filename)
+	print G.parameters
+	gred = greedy(G)
+	best_tour,final_cost = gred.main()
+	return best_tour,final_cost

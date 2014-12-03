@@ -11,7 +11,7 @@ class genetic_algorithm():
 
 	def __init__(s, G):
 		s.G = G.Graph		
-		s.total_generations = 100
+		s.total_generations = 200
 		s.pop_size = 50
 		s.tournament_size = 6
 		s.mutation_rate = 0.015
@@ -74,42 +74,82 @@ class genetic_algorithm():
 		for i in xrange(s.pop_size):
 			for j in xrange(len(new_pop[i])):
 				if random.random() < s.mutation_rate:
-					k = random.randint(0, len(new_pop[i])-1)
+					#k = random.randint(0, len(new_pop[i])-1)
+					#print new_pop[i],
+					old_cost = s.get_cost(new_pop[i])
+					new_cost = old_cost + 1
 
-					new_pop[i][j], new_pop[i][k] = new_pop[i][k], new_pop[i][j]
+					check = 1
+					while(new_cost>old_cost):
+						indices = random.sample(range(len(new_pop[i])),2)
+						i1,i2 = min(indices), max(indices)
+						mutated_tour = new_pop[i][:i1] + [c for c in reversed(new_pop[i][i1:i2+1])] + new_pop[i][i2+1:]
+						new_cost = s.get_cost(mutated_tour)
+						check +=1
+						if check>100:
+							break
+					new_pop[i] = mutated_tour
+					#print new_pop[i],i1,i2
+					#new_pop[i][j], new_pop[i][k] = new_pop[i][k], new_pop[i][j]
 					count += 1
 		#print count,
 		return new_pop
 
 
-	def main(s):
+	def main(s,filename,method,random_seed,cutoff_time,runID):
+		start_time = time.time()
 		population = s.get_initial_population()
-		print "Initial Cost: ", s.get_cost(s.find_fittest(population))
+		initial_cost = s.get_cost(s.find_fittest(population))
+		print "Initial Cost: ", initial_cost
+		current_best_cost = initial_cost
+		all_costs = []
 
-		for i in xrange(s.total_generations):
-			print i, s.get_cost(s.find_fittest(population))
+		with open('op/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.trace','w') as fil:
+
+			for i in xrange(s.total_generations):
+				cost = s.get_cost(s.find_fittest(population))
+				
+				all_costs.append(cost)
+
+				if len(np.unique(np.array(all_costs[-6:])))==1 and len(all_costs)>10:
+					break
+				print i, cost
+				if cost<current_best_cost:
+					fil.write(str(round(time.time()-start_time,2))+','+str(int(cost))+'\n')
+					current_best_cost = cost
+				population = s.evolve(deepcopy(population))
 			
-			population = s.evolve(deepcopy(population))
-		final_cost = s.get_cost(s.find_fittest(population))
-		print "Final Cost: ", final_cost
+			best_tour = s.find_fittest(population)
+			final_cost = s.get_cost(best_tour)
 
-		return final_cost
+			if final_cost<current_best_cost:
+				fil.write(str(round(time.time()-start_time,2))+','+str(int(final_cost))+'\n')
+			print "Final Cost: ", final_cost
+			return best_tour,final_cost,time.time()-start_time
 
-output = []
-times = []
 
-G = CSE6140Project()
-G.load_file('kroA100.tsp')
-print G.parameters
-for i in xrange(5):
+def run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID):
+	random.seed(random_seed)
+	
+	G = CSE6140Project()
+	G.load_file(filename)
+	print G.parameters
 	ga = genetic_algorithm(G)
-	start_time = time.time()
-	output.append(ga.main())
-	end_time = time.time()
-	times.append(end_time-start_time)
-print output
-print np.mean(output)
+	best_tour,final_cost,runtime = ga.main(filename,method,random_seed,cutoff_time,runID)
 
-print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
-print times
-print np.mean(times)
+	"""
+	output = []
+	times = []
+	for i in xrange(5):
+		ga = genetic_algorithm(G)
+		start_time = time.time()
+		output.append(ga.main())
+		end_time = time.time()
+		times.append(end_time-start_time)
+	print output
+	print np.mean(output)
+	print (float)(np.mean(output)-float(G.parameters['optimal_cost']))/float(G.parameters['optimal_cost'])
+	print times
+	print np.mean(times)
+	"""
+	return best_tour,final_cost,runtime
