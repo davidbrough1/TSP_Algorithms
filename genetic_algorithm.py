@@ -11,7 +11,7 @@ class genetic_algorithm():
 
 	def __init__(s, G):
 		s.G = G.Graph		
-		s.total_generations = 100
+		s.total_generations = 200
 		s.pop_size = 50
 		s.tournament_size = 6
 		s.mutation_rate = 0.015
@@ -96,30 +96,46 @@ class genetic_algorithm():
 		return new_pop
 
 
-	def main(s):
+	def main(s,filename,method,random_seed,cutoff_time,runID):
+		start_time = time.time()
 		population = s.get_initial_population()
-		print "Initial Cost: ", s.get_cost(s.find_fittest(population))
+		initial_cost = s.get_cost(s.find_fittest(population))
+		print "Initial Cost: ", initial_cost
+		current_best_cost = initial_cost
+		all_costs = []
 
-		for i in xrange(s.total_generations):
-			print i, s.get_cost(s.find_fittest(population))
+		with open('op/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.trace','w') as fil:
+
+			for i in xrange(s.total_generations):
+				cost = s.get_cost(s.find_fittest(population))
+				
+				all_costs.append(cost)
+
+				if len(np.unique(np.array(all_costs[-6:])))==1 and len(all_costs)>10:
+					break
+				print i, cost
+				if cost<current_best_cost:
+					fil.write(str(round(time.time()-start_time,2))+','+str(int(cost))+'\n')
+					current_best_cost = cost
+				population = s.evolve(deepcopy(population))
 			
-			population = s.evolve(deepcopy(population))
-		
-		best_tour = s.find_fittest(population)
-		final_cost = s.get_cost(best_tour)
-		print "Final Cost: ", final_cost
-		return best_tour,final_cost
+			best_tour = s.find_fittest(population)
+			final_cost = s.get_cost(best_tour)
+
+			if final_cost<current_best_cost:
+				fil.write(str(round(time.time()-start_time,2))+','+str(int(final_cost))+'\n')
+			print "Final Cost: ", final_cost
+			return best_tour,final_cost,time.time()-start_time
 
 
-def run_genetic_algorithm(filename,random_seed):
-	
+def run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID):
 	random.seed(random_seed)
 	
 	G = CSE6140Project()
 	G.load_file(filename)
 	print G.parameters
 	ga = genetic_algorithm(G)
-	best_tour,final_cost = ga.main()
+	best_tour,final_cost,runtime = ga.main(filename,method,random_seed,cutoff_time,runID)
 
 	"""
 	output = []
@@ -136,4 +152,4 @@ def run_genetic_algorithm(filename,random_seed):
 	print times
 	print np.mean(times)
 	"""
-	return best_tour,final_cost
+	return best_tour,final_cost,runtime

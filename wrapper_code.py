@@ -3,7 +3,8 @@ from genetic_algorithm import *
 from greedy import *
 from timeout import timeout
 
-@timeout(int(sys.argv[2]))
+#@timeout(int(sys.argv[2]))
+@timeout(100000)
 def main(args):
 	filename = args[0]
 	cutoff_time = int(args[1])
@@ -11,8 +12,8 @@ def main(args):
 	random_seed = args[3]
 	
 	if method == 'LS1':
-		tour,cost = run_genetic_algorithm(filename,random_seed)
 		runID = '_'+str(random_seed)
+		tour,cost,runtime = run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID)
 	elif method == 'BnB':
 		runID = ''
 	elif method == 'Heuristic':
@@ -26,10 +27,12 @@ def main(args):
 		print "Incorrect Method Entered. The correct options are:\nGA, BnB, Greedy, SA, Approx"
 
 	#for runID in xrange(1,11):
-	with open('op/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.sol','w') as opfile:
-		opfile.write(str(int(cost)))
-		opfile.write('\n')
-		opfile.write(','.join([str(c) for c in tour]))
+	with open('op/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.sol','w') as solfile:
+		solfile.write(str(int(cost)))
+		solfile.write('\n')
+		solfile.write(','.join([str(c) for c in tour]))
 
-if __name__ == '__main__':
-	main(sys.argv[1:])
+	return cost,runtime
+
+#if __name__ == '__main__':
+#	main(sys.argv[1:])
