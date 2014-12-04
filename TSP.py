@@ -5,7 +5,7 @@ from greedy import *
 from simulated_annealing import run_simulated_annealing
 from approximation import run_MSTApprox
 from timeout import timeout
-
+from BnB import *
 #@timeout(100000)
 
 
@@ -37,6 +37,7 @@ def main(args):
             filename, method, random_seed, cutoff_time, runID)
     elif method == 'BnB':
         runID = ''
+        tour, cost, runtime = BnB(filename, cutoff_time)
     elif method == 'Heuristic':
         tour, cost, runtime = run_greedy_algorithm(filename, random_seed)
         runID = ''
@@ -57,7 +58,6 @@ def main(args):
 
     print cost, runtime
     return cost, runtime
-
 
 if __name__ == '__main__':
     main(sys.argv[1:])
