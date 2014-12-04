@@ -2,9 +2,21 @@ import Queue as q
 import time
 import networkx as nx
 import random as random
+import os
+from project import CSE6140Project
 
 
-def approximation(G, cutoff, random_seed):
+def run_MSTApprox(filename, cutoff_time, random_seed):
+    project = CSE6140Project()
+    project.load_file(filename)
+    file_name = str(filename[:-4]) + '_Approx_' + str(cutoff_time) + \
+        '_' + str(random_seed) + '.trace'
+    if os.path.isfile(file_name):
+        os.remove(file_name)
+    return approximation(project.Graph, file_name, random_seed)
+
+
+def approximation(G, file_name, random_seed):
     '''
     This method takes in a graph and uses the MST approximation algorithm to
     find an approximate solution to TSP for a given tree.
@@ -12,7 +24,13 @@ def approximation(G, cutoff, random_seed):
     t_start = time.time()
     random.seed(random_seed)
     solution = _get_solution(G)
-    return time.time() - t_start, int(_get_solution_weights(solution))
+    runtime = time.time() - t_start
+    tour = get_tour(solution)
+    trace = open(file_name, 'a')
+    cost = int(_get_solution_weights(solution))
+    trace_str = str((runtime, cost))
+    trace.write(trace_str[1:-1])
+    return tour, cost, runtime
 
 
 def _get_solution(G):
@@ -142,3 +160,30 @@ def _make_sets(nodes):
     node_sets = []
     [node_sets.append(set([n])) for n in nodes]
     return node_sets
+
+
+def get_tour(state):
+    '''
+    Get tour of graph starting with node v1, v2, v2, ..., vn, v1.
+    '''
+    node_list = _get_node_list(state)
+    tour = [node_list[0]]
+    for node in node_list[1:]:
+        tour.append(node)
+        tour.append(node)
+    return tour[:-1]
+
+
+def _get_node_list(state):
+    tmp_state = state[:]
+    first_edge = tmp_state.pop()
+    node_list = [first_edge[0], first_edge[1]]
+    while node_list.count(node_list[-1]) < 2:
+        for edge in tmp_state:
+            if edge[0] == node_list[-1]:
+                tmp_state.remove(edge)
+                node_list.append(edge[1])
+            elif edge[1] == node_list[-1]:
+                tmp_state.remove(edge)
+                node_list.append(edge[0])
+    return node_list

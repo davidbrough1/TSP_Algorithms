@@ -1,29 +1,35 @@
 import time
 import random as random
 import math as math
+import os
 from approximation import _get_solution
 from project import CSE6140Project
 
 
-def run_simulated_annealing(filename, random_seed):
+def run_simulated_annealing(filename, cutoff_time, random_seed):
+    file_name = str(filename[:-4]) + '_LS2_' + str(cutoff_time) + \
+        '_' + str(random_seed) + '.trace'
+    if os.path.isfile(file_name):
+        os.remove(file_name)
     project = CSE6140Project()
     project.load_file(filename)
-    simulated_annealing(project.Graph, int(random_seed))
+    return simulated_annealing(project.Graph, int(random_seed), file_name)
 
 
-def simulated_annealing(G, random_seed):
+def simulated_annealing(G, random_seed, file_name):
     '''
     '''
+    trace = open(file_name, 'a')
     t_start = time.time()
-    trace_sol = []
     random.seed(random_seed)
     edge_dict = _make_edge_dict(list(G.edges_iter(data=True)))
     temp_inital = 10000
     temp = 0.999999999999999999
     temp_power = 1
     initial_state = _get_solution(G)
-    trace_sol.append((time.time() - t_start,
-                      int(_get_solution_weights(initial_state))))
+    trace_str = str((time.time() - t_start,
+                    int(_get_solution_weights(initial_state))))
+    trace.write(trace_str[1:-1] + '\n')
     state = initial_state
     solution_steady_state_count = 0
     while solution_steady_state_count < len(initial_state) * 10:
@@ -34,10 +40,12 @@ def simulated_annealing(G, random_seed):
         else:
             if _get_solution_weights(new_state) < _get_solution_weights(state):
                 state = new_state
-                trace_sol.append((time.time() - t_start,
-                                  int(_get_solution_weights(new_state))))
+                runtime = time.time() - t_start
+                trace_str = str((runtime, int(_get_solution_weights(state))))
+                trace.write(trace_str[1:-1] + '\n')
                 solution_steady_state_count = 0
-    return state, trace_sol[-1][1], trace_sol
+    tour = get_tour(state)
+    return tour, int(_get_solution_weights(state)), runtime
 
 
 def _annealing(state, edge_dict, temp, temp_inital, temp_power):
@@ -162,6 +170,26 @@ def _check_if_cycle(state):
     '''
     Helper function to check if new state is still a simple cycle.
     '''
+    node_list = _get_node_list(state)
+    if len(node_list) - 1 == len(state):
+        return True
+    else:
+        return False
+
+
+def get_tour(state):
+    '''
+    Get tour of graph starting with node v1, v2, v2, ..., vn, v1.
+    '''
+    node_list = _get_node_list(state)
+    tour = [node_list[0]]
+    for node in node_list[1:]:
+        tour.append(node)
+        tour.append(node)
+    return tour[:-1]
+
+
+def _get_node_list(state):
     tmp_state = state[:]
     first_edge = tmp_state.pop()
     node_list = [first_edge[0], first_edge[1]]
@@ -173,7 +201,4 @@ def _check_if_cycle(state):
             elif edge[1] == node_list[-1]:
                 tmp_state.remove(edge)
                 node_list.append(edge[0])
-    if len(node_list) - 1 == len(state):
-        return True
-    else:
-        return False
+    return node_list
