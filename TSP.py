@@ -2,7 +2,7 @@ import sys, getopt
 from genetic_algorithm import *
 from greedy import *
 from timeout import timeout
-from tsp import *
+from BnB import *
 #@timeout(100000)
 @timeout(int(sys.argv[6]))
 def main(args):
@@ -30,6 +30,7 @@ def main(args):
 		tour,cost,runtime = run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID)
 	elif method == 'BnB':
 		runID = ''
+		tour,cost,runtime = BnB(filename,cutoff_time)
 	elif method == 'Heuristic':
 		tour,cost,runtime = run_greedy_algorithm(filename,random_seed)
 		runID = ''
@@ -40,7 +41,7 @@ def main(args):
 	else:
 		print "Incorrect Method Entered. The correct options are:\nGA, BnB, Greedy, SA, Approx"
 
-	with open('check/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.sol','w') as solfile:
+	with open(filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.sol','w') as solfile:
 		solfile.write(str(int(cost)))
 		solfile.write('\n')
 		solfile.write(','.join([str(c) for c in tour]))

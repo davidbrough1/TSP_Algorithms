@@ -4,8 +4,6 @@ from project import CSE6140Project
 INF = 100000000
 
 best_cost = 0
-filename = "placeholder"
-cutoff = 1000000
 start_time = time.time()
 def reduce(size, w, row, col, rowred, colred):
     rvalue = 0
@@ -62,7 +60,7 @@ def bestEdge(size, w, row, col):
     return mosti, ri, ci
 
 
-def explore(n, w, edges, cost, row, col, best, fwdptr, backptr):
+def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
     global best_cost
     
     if(time.time()-start_time < cutoff):
@@ -107,13 +105,13 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr):
                 for i in xrange(rv, size - 1): newrow[i] = row[i + 1]
                 for i in xrange(cv): newcol[i] = col[i]
                 for i in xrange(cv, size - 1): newcol[i] = col[i + 1]
-                explore(n, w, edges + 1, cost, newrow, newcol, best, fwdptr, backptr)
+                explore(n, w, edges + 1, cost, newrow, newcol, best, fwdptr, backptr,filename,cutoff)
                 w[last][first] = colrowval
                 backptr[col[cv]] = INF
                 fwdptr[row[rv]] = INF
                 if lowerbound < best_cost:
                     w[row[rv]][col[cv]] = INF
-                    explore(n, w, edges, cost, row, col, best, fwdptr, backptr)
+                    explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff)
                     w[row[rv]][col[cv]] = 0 
 
         for i in xrange(size):
@@ -123,7 +121,7 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr):
         sys.exit("Cutoff Reached")
 
 
-def atsp(w):
+def atsp(w,filename,cutoff):
     
     global best_cost
     size = len(w)
@@ -135,7 +133,7 @@ def atsp(w):
     backptr = [INF for _ in xrange(size)]
     best_cost = INF
 
-    explore(size, w, 0, 0, row, col, best, fwdptr, backptr)
+    explore(size, w, 0, 0, row, col, best, fwdptr, backptr,filename,cutoff)
 
     index = 0
     for i in xrange(size):
@@ -156,14 +154,11 @@ def atsp(w):
     return cost, index
 
 
-def main():
-    global filename 
-    filename = sys.argv[1]
-    global cutoff
-    cutoff = float(sys.argv[2])
+def BnB(filename,cutoff):
+    
 
     aGraph = CSE6140Project()
-    aGraph.load_file(filename+".tsp")
+    aGraph.load_file(filename)
     trace_file = open(filename+"_BnB"+"_"+str(cutoff)+".trace",'w')
     trace_file.close()
     
@@ -186,10 +181,9 @@ def main():
 
     global start_time 
     start_time = time.time()
-    cost, path = atsp(m)
-    solution_file.write(str(cost)+"\n")
-    for i in range(len(path)):
-        solution_file.write(str(path[i][0])+",")
+    cost, path = atsp(m,filename,cutoff)
+    end_time = time.time()
+    return path,cost, end_time-start_time
     
 if __name__ == "__main__":
-    main()
+    BnB()
