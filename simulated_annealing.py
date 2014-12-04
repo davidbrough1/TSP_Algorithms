@@ -1,47 +1,74 @@
-from approximation import _get_solution
 import time
 import random as random
 import math as math
+from approximation import _get_solution
+from project import CSE6140Project
 
 
-def simulated_annealing(G, cutoff, random_seed):
+def run_simulated_annealing(filename, random_seed):
+    project = CSE6140Project()
+    project.load_file(filename)
+    simulated_annealing(project.Graph, int(random_seed))
+
+
+def simulated_annealing(G, random_seed):
+    '''
+    '''
     t_start = time.time()
+    trace_sol = []
     random.seed(random_seed)
     edge_dict = _make_edge_dict(list(G.edges_iter(data=True)))
-    temp = 0.999
+    temp_inital = 10000
+    temp = 0.999999999999999999
+    temp_power = 1
     initial_state = _get_solution(G)
+    trace_sol.append((time.time() - t_start,
+                      int(_get_solution_weights(initial_state))))
     state = initial_state
     solution_steady_state_count = 0
-    while solution_steady_state_count < len(initial_state) * 3 and \
-            time.time() - t_start < cutoff:
-        new_state, temp = _annealing(state, edge_dict, temp)
+    while solution_steady_state_count < len(initial_state) * 10:
+        new_state, temp, temp_power = _annealing(state[:], edge_dict,
+                                                 temp, temp_inital, temp_power)
         if new_state == state:
             solution_steady_state_count += 1
-        state = new_state
-    return _get_solution_weights(state), time.time() - t_start
+        else:
+            if _get_solution_weights(new_state) < _get_solution_weights(state):
+                state = new_state
+                trace_sol.append((time.time() - t_start,
+                                  int(_get_solution_weights(new_state))))
+                solution_steady_state_count = 0
+    return state, trace_sol[-1][1], trace_sol
 
 
-def _annealing(state, edge_dict, temp):
+def _annealing(state, edge_dict, temp, temp_inital, temp_power):
+    '''
+    This function takes in a state, the edge dictionary, the temp, initial
+    temp and the power of the exponent used to determine the temp.
+    '''
     edge_pair = _get_edge_pair(state)
-    temp_power = 1.00005
     new_edge_pair = _get_new_edge_pair(edge_pair[0], edge_pair[1], edge_dict)
-    del_E = _get_solution_weights(edge_pair) - \
-        _get_solution_weights(new_edge_pair)
-    if del_E > 0:
+    del_E = _get_solution_weights(new_edge_pair) - \
+        _get_solution_weights(edge_pair)
+    if not new_edge_pair[0] in state and not new_edge_pair[1] in state:
         temp = temp ** temp_power
-        state = _swap_edges(edge_pair, new_edge_pair, state)
-    else:
-        if temp == 0. or del_E == 0:
-            pass
-        elif temp == 0.:
-            if random.uniform(0, 1) < math.exp(- temp / del_E):
-                temp = temp ** temp_power
-                state = _swap_edges(edge_pair, new_edge_pair, state)
-        elif del_E == 0:
-            if random.uniform(0, 1) < math.exp(del_E / temp):
-                temp = temp ** temp_power
-                state = _swap_edges(edge_pair, new_edge_pair, state)
-    return state, temp
+        if del_E < 0:
+            tmp_state = _swap_edges(edge_pair, new_edge_pair, state[:])
+        else:
+            current_temp = temp_inital * temp ** temp_power
+            if del_E == 0 or current_temp == 0:
+                pass
+            elif current_temp == 0.:
+                if random.uniform(0, 1) > math.exp(current_temp / del_E):
+                    tmp_state = _swap_edges(edge_pair, new_edge_pair, state[:])
+            else:
+                temp_power += 1
+                if random.uniform(0, 1) < math.exp(- del_E / current_temp):
+                    tmp_state = _swap_edges(edge_pair,
+                                            new_edge_pair, state[:])
+    if 'tmp_state' in locals():
+        if _check_if_cycle(tmp_state):
+            state = tmp_state
+    return state, temp, temp_power
 
 
 def _swap_edges(old_edge_pair, new_edge_pair, state):
@@ -129,3 +156,24 @@ def _check_key(key, edge_dict):
             return new_key
         else:
             raise RuntimeError('Not a valid key %s' % str(key))
+
+
+def _check_if_cycle(state):
+    '''
+    Helper function to check if new state is still a simple cycle.
+    '''
+    tmp_state = state[:]
+    first_edge = tmp_state.pop()
+    node_list = [first_edge[0], first_edge[1]]
+    while node_list.count(node_list[-1]) < 2:
+        for edge in tmp_state:
+            if edge[0] == node_list[-1]:
+                tmp_state.remove(edge)
+                node_list.append(edge[1])
+            elif edge[1] == node_list[-1]:
+                tmp_state.remove(edge)
+                node_list.append(edge[0])
+    if len(node_list) - 1 == len(state):
+        return True
+    else:
+        return False

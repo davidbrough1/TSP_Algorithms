@@ -12,7 +12,7 @@ def approximation(G, cutoff, random_seed):
     t_start = time.time()
     random.seed(random_seed)
     solution = _get_solution(G)
-    return _get_solution_weights(solution), time.time() - t_start
+    return time.time() - t_start, int(_get_solution_weights(solution))
 
 
 def _get_solution(G):
