@@ -1,6 +1,7 @@
 from project import CSE6140Project
 
 import random
+import time
 
 class greedy():
 	def __init__(s,G):
@@ -63,6 +64,8 @@ def run_greedy_algorithm(filename,random_seed):
 	G = CSE6140Project()
 	G.load_file(filename)
 	print G.parameters
+
+	start_time = time.time()
 	gred = greedy(G)
 	best_tour,final_cost = gred.main()
-	return best_tour,final_cost
+	return best_tour,final_cost,time.time()-start_time

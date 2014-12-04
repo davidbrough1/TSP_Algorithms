@@ -1,135 +1,53 @@
-#! /usr/bin/python
+import sys, getopt
+from genetic_algorithm import *
+from greedy import *
+from timeout import timeout
 
-import Graph
-import copy
-from heapq import *
-import sys
-import time
+#@timeout(100000)
+@timeout(int(sys.argv[6]))
+def main(args):
+	try:
+		opts, args = getopt.getopt(args,"hi:a:t:s:",["inst=","alg=","time=","seed="])
+	except getopt.GetoptError:
+		print 'python ./tsp.py --inst <filename.tsp> --alg [BnB | Approx | Heuristic | LS1 | LS2] --time <cutoff_in_seconds> --seed <random_seed>'
+		sys.exit(2)
 
+	for opt,arg in opts:
+		if opt == '-h':
+			print 'python ./tsp.py --inst <filename.tsp> --alg [BnB | Approx | Heuristic | LS1 | LS2] --time <cutoff_in_seconds> --seed <random_seed>'
+			sys.exit()
+		elif opt in ('-i','--inst'):
+			filename = arg
+		elif opt in ('-a','--alg'):
+			method = arg
+		elif opt in ('-t','--time'):
+			cutoff_time = arg
+		elif opt in ('-s','--seed'):
+			random_seed = arg
 
-filename = "placeholder"
-cutoff = 100000.0
-
-
-class TSPNode:
-    
-    
-    def __init__(self, aGraph, aPath=[], pathLength=0):
-        self.state = aGraph
-        self.path = copy.copy(aPath)
-        self.pathLength = pathLength
-        self.bound = self.computeBound()
-
-
-    def addVertex(self, vertex):
-        if len(self.path):
-            self.pathLength += self.state.get_dist(self.path[-1],vertex)
-        else:
-            self.pathLength = 0
-        self.path.append(vertex)
-        self.bound = self.computeBound()
-    def __lt__(self, otherNode):
-        return self.bound < otherNode.bound
-    def __le__(self, otherNode):
-        return self.bound <= otherNode.bound
-    def __gt__(self, otherNode):
-        return self.bound > otherNode.bound
-    def __ge__(self, otherNode):
-        return self.bound >= otherNode.bound
-
-    def computeBound(self):
-	    shortest = 0
-	    for name1 in self.state.nodeNames:
-		short = -1
-		if name1 not in self.path:
-		    for name2 in self.state.nodeNames:
-		        if name2 not in self.path and name1 != name2:
-		            if short == -1 or self.state.get_dist(name1, name2) < short:
-		                short = self.state.get_dist(name1, name2)
-		if short:
-		    shortest += short
-	    return (shortest + self.pathLength)	
-	    	    
-
-
-
-def travelingSalesperson(aGraph):
-   
-    visitedNodes = 0 # to keep track of how many nodes we 'visit'
-    optimalTour = None # Until we discover the first tour
-
-   
-    priorityQueue = []
-
-    
-    currentNode = TSPNode(aGraph)
-
-    
-    currentNode.addVertex(aGraph.get_names()[0])
-
-    
-    heappush(priorityQueue, currentNode)
-
-    
-    while (len(priorityQueue) > 0):
-	currentTime = time.clock()	
-	if((currentTime - startTime) <= cutoff):
-		
-		currentNode = heappop(priorityQueue)
-
-		
-		if not optimalTour or (currentNode.bound < optimalTour.pathLength):
-		    visitedNodes += 1
-		    
-		    if len(currentNode.path) == aGraph.size():
-		        if aGraph.get_dist(currentNode.path[-1], currentNode.path[0]) != None:
-		            currentNode.addVertex(currentNode.path[0])
-		            if not optimalTour or \
-		                  (currentNode.pathLength < optimalTour.pathLength):
-		                optimalTour = currentNode
-				endTime = time.clock()
-				f=open(filename+".trace",'a')
-				f.write(str(endTime-startTime)+" "+str(optimalTour.pathLength)+"\n")
-			
-		    else:
-		        for node in aGraph.get_names():
-		            if node not in currentNode.path and \
-		                  aGraph.get_dist(currentNode.path[-1], node) != None:
-		                newNode = TSPNode(currentNode.state, 
-		                                  currentNode.path, 
-		                                  currentNode.pathLength)
-		                newNode.addVertex(node)
-		                if not optimalTour or \
-		                      (newNode.bound < optimalTour.pathLength):
-		                    heappush(priorityQueue, newNode)
-
-		else:  
-			return (visitedNodes, optimalTour)
+	if method == 'LS1':
+		runID = '_'+str(random_seed)
+		tour,cost,runtime = run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID)
+	elif method == 'BnB':
+		runID = ''
+	elif method == 'Heuristic':
+		tour,cost,runtime = run_greedy_algorithm(filename,random_seed)
+		runID = ''
+	elif method == 'LS2':
+		runID = '_'+str(random_seed)
+	elif method == 'Approx':
+		runID = ''
 	else:
-		sys.exit(0)
+		print "Incorrect Method Entered. The correct options are:\nGA, BnB, Greedy, SA, Approx"
 
-    return (visitedNodes, optimalTour)
+	with open('check/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.sol','w') as solfile:
+		solfile.write(str(int(cost)))
+		solfile.write('\n')
+		solfile.write(','.join([str(c) for c in tour]))
 
+	print cost, runtime
+	return cost,runtime
 
 
 if __name__ == '__main__':
-    filename = sys.argv[1]
-    cutoff = float(sys.argv[2])
-    print cutoff
-    f=open(filename+".trace",'w')
-    f.close()
-    aGraph = Graph.fromTSPFile(filename)
-    print aGraph
-    startTime = time.clock()
-    (visited, solution) = travelingSalesperson(aGraph)
-    print 'Visited ', visited, ' nodes'
-    if solution:
-	f=open(filename+".sol",'w')
-	f.write(str(solution.pathLength)+"\n")
-	for vertex in range(0,len(solution.path)):
-		f.write(str(solution.path[vertex])+",")
-	f.close()
-        print 'Shortest tour is ',solution.pathLength, ' long:'
-        print solution.path
-    else:
-        print 'No tour found'
+	main(sys.argv[1:])
