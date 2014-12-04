@@ -1,10 +1,22 @@
 import time
 import sys
 from project import CSE6140Project
-INF = 100000000
 
+'''Globals
+   @INF = Infinity
+   @best_cost = Present best cost
+   @start_time = For measuring rate
+'''
+
+INF = 100000000
 best_cost = 0
 start_time = time.time()
+
+
+
+
+'''Reducing the Cost Matrix '''
+
 def reduce(size, w, row, col, rowred, colred):
     rvalue = 0
     for i in xrange(size):
@@ -28,6 +40,8 @@ def reduce(size, w, row, col, rowred, colred):
             rvalue += temp
         colred[j] = temp
     return rvalue
+
+'''Finding the bestedge'''
 
 
 def bestEdge(size, w, row, col):
@@ -59,6 +73,8 @@ def bestEdge(size, w, row, col):
                     ci = j
     return mosti, ri, ci
 
+
+'''Probing and exploring the nodes'''
 
 def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
     global best_cost
@@ -121,7 +137,13 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
         sys.exit("Cutoff Reached")
 
 
-def atsp(w,filename,cutoff):
+
+
+
+'' 'Driver function, calls explore repeatedly'''
+
+
+def tsp(w,filename,cutoff):
     
     global best_cost
     size = len(w)
@@ -154,6 +176,7 @@ def atsp(w,filename,cutoff):
     return cost, index
 
 
+'''Main'''
 def BnB(filename,cutoff):
     
 
@@ -164,7 +187,7 @@ def BnB(filename,cutoff):
     
 
     m = [[INF for i in range(int(aGraph.parameters['dimensions']))] for j in range(int(aGraph.parameters['dimensions']))]
-    #adjasted matrix
+    
     for i in range(int(aGraph.parameters['dimensions'])):
         for j in range(int(aGraph.parameters['dimensions'])):
             if(i==j):
@@ -181,7 +204,7 @@ def BnB(filename,cutoff):
 
     global start_time 
     start_time = time.time()
-    cost, path = atsp(m,filename,cutoff)
+    cost, path = tsp(m,filename,cutoff)
     end_time = time.time()
     return path,cost, end_time-start_time
     
