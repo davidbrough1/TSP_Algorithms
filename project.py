@@ -27,9 +27,11 @@ class CSE6140Project(object):
         self.parameters['edge_weight_type'] = file_data[3][18:].rstrip()
         self.parameters['optimal_cost'] = file_data[4][14:].rstrip()
         self.parameters['header'] = file_data[5].rstrip()
+        self.m = [[100000 for i in range(int(self.parameters['dimensions']))] for j in range(int(self.parameters['dimensions']))]
         node_locations = file_data[6:6 + int(self.parameters['dimensions'])]
         edge_weights = self._get_weights(node_locations,
                                          self.parameters['edge_weight_type'])
+        self.m = edge_weights
         G = nx.Graph()
         G.add_weighted_edges_from(edge_weights)
         self.Graph = G
@@ -70,7 +72,7 @@ class CSE6140Project(object):
                     
                     weight = earth_r * math.acos(0.5 * ((1.0 + q1) * q2
                                                  - (1.0 - q1) * q3)) + 1.0
-                    edge_weights.append((node_j[0], node_i[0], round(weight)))
+                    edge_weights.append((node_j[0], node_i[0], int(weight)))
         return edge_weights
 
     def _get_euclidean_weights(self, tuple_node_locaitons):

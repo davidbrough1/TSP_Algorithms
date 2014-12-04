@@ -2,7 +2,7 @@ import sys, getopt
 from genetic_algorithm import *
 from greedy import *
 from timeout import timeout
-
+from tsp import *
 #@timeout(100000)
 @timeout(int(sys.argv[6]))
 def main(args):

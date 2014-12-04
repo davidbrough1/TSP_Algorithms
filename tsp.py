@@ -1,5 +1,4 @@
 import time
-import Graph        
 import sys
 from project import CSE6140Project
 INF = 100000000
@@ -65,8 +64,7 @@ def bestEdge(size, w, row, col):
 
 def explore(n, w, edges, cost, row, col, best, fwdptr, backptr):
     global best_cost
-    print time.time()
-    print "time \n"
+    
     if(time.time()-start_time < cutoff):
 
         colred = [0 for _ in xrange(n)]
