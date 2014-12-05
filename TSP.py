@@ -39,8 +39,8 @@ def main(args):
         runID = ''
         tour, cost, runtime = BnB(filename, cutoff_time)
     elif method == 'Heuristic':
-        tour, cost, runtime = run_greedy_algorithm(filename, random_seed)
-        runID = ''
+    	runID = '_' + str(random_seed)
+        tour, cost, runtime = run_greedy_algorithm(filename, method, random_seed, cutoff_time, runID)
     elif method == 'LS2':
         runID = '_' + str(random_seed)
         tour, cost, runtime = run_simulated_annealing(filename, cutoff_time,

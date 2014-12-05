@@ -37,7 +37,7 @@ def execute(filename, method, random_seed):
 	elif method == 'BnB':
 		runID = ''
 	elif method == 'Heuristic':
-		tour,cost,runtime = run_greedy_algorithm(filename,random_seed)
+		tour,cost,runtime = run_greedy_algorithm(filename,method,random_seed,cutoff_time,runID)
 		runID = ''
 	elif method == 'LS2':
 		runID = '_'+str(random_seed)
