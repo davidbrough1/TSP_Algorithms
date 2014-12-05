@@ -1,3 +1,4 @@
+# This file contains code used to implement the genetic algorithm.
 from copy import deepcopy
 from project import CSE6140Project
 
@@ -10,7 +11,7 @@ class genetic_algorithm():
 
 
 	def __init__(s, G):
-		s.G = G.Graph		
+		s.G = G.Graph
 		s.total_generations = 200
 		s.pop_size = 50
 		s.tournament_size = 6
@@ -23,7 +24,7 @@ class genetic_algorithm():
 
 
 	def get_initial_population(s):
-		return [s.shuffle_tour() for i in xrange(s.pop_size)]		
+		return [s.shuffle_tour() for i in xrange(s.pop_size)]
 
 
 	def get_cost(s, tour):
@@ -55,7 +56,7 @@ class genetic_algorithm():
 
 		for loc in p1[i:j]:
 			p2.remove(loc)
-			
+
 		return p2[0:i]+p1[i:j]+p2[i:]
 
 
@@ -64,11 +65,11 @@ class genetic_algorithm():
 
 		#keep best from previous generation
 		new_pop.append(s.find_fittest(population))
-		
+
 		for i in xrange(s.pop_size-1):
 			parent1 = s.tournament_select(deepcopy(population))
 			parent2 = s.tournament_select(deepcopy(population))
-			
+
 			new_pop.append(s.crossover(parent1, parent2))
 		count = 0
 		for i in xrange(s.pop_size):
@@ -108,7 +109,7 @@ class genetic_algorithm():
 
 			for i in xrange(s.total_generations):
 				cost = s.get_cost(s.find_fittest(population))
-				
+
 				all_costs.append(cost)
 
 				if len(np.unique(np.array(all_costs[-6:])))==1 and len(all_costs)>10:
@@ -118,7 +119,7 @@ class genetic_algorithm():
 					fil.write(str(round(time.time()-start_time,2))+','+str(int(cost))+'\n')
 					current_best_cost = cost
 				population = s.evolve(deepcopy(population))
-			
+
 			best_tour = s.find_fittest(population)
 			final_cost = s.get_cost(best_tour)
 
@@ -130,7 +131,7 @@ class genetic_algorithm():
 
 def run_genetic_algorithm(filename,method,random_seed,cutoff_time,runID):
 	random.seed(random_seed)
-	
+
 	G = CSE6140Project()
 	G.load_file(filename)
 	print G.parameters

@@ -1,3 +1,4 @@
+#This file contains all the code used to implement branch and bound algorithm
 import time
 import sys
 from project import CSE6140Project
@@ -13,9 +14,8 @@ best_cost = 0
 start_time = time.time()
 
 
-
-
 '''Reducing the Cost Matrix '''
+
 
 def reduce(size, w, row, col, rowred, colred):
     rvalue = 0
@@ -78,7 +78,7 @@ def bestEdge(size, w, row, col):
 
 def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
     global best_cost
-    
+
     if(float(time.time()-start_time) < float(cutoff)):
 
         colred = [0 for _ in xrange(n)]
@@ -95,7 +95,7 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
                 best[row[0]] = col[1 - avoid]
                 best[row[1]] = col[avoid]
                 best_cost = cost
-                
+
                 trace_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".trace",'a')
                 trace_file.write(str(time.time()-start_time)+","+str(best_cost)+"\n")
                 trace_file.close()
@@ -128,7 +128,7 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
                 if lowerbound < best_cost:
                     w[row[rv]][col[cv]] = INF
                     explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff)
-                    w[row[rv]][col[cv]] = 0 
+                    w[row[rv]][col[cv]] = 0
 
         for i in xrange(size):
             for j in xrange(size):
@@ -144,7 +144,7 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
 
 
 def tsp(w,filename,cutoff):
-    
+
     global best_cost
     size = len(w)
     col = [i for i in xrange(size)]
@@ -178,16 +178,16 @@ def tsp(w,filename,cutoff):
 
 '''Main'''
 def BnB(filename,cutoff):
-    
+
 
     aGraph = CSE6140Project()
     aGraph.load_file(filename)
     trace_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".trace",'w')
     trace_file.close()
-    
+
 
     m = [[INF for i in range(int(aGraph.parameters['dimensions']))] for j in range(int(aGraph.parameters['dimensions']))]
-    
+
     for i in range(int(aGraph.parameters['dimensions'])):
         for j in range(int(aGraph.parameters['dimensions'])):
             if(i==j):
@@ -195,18 +195,18 @@ def BnB(filename,cutoff):
             else:
                 for k in range(len(aGraph.m)):
                     if((i==aGraph.m[k][0]-1 and j==aGraph.m[k][1]-1) or(i==aGraph.m[k][1]-1 and j == aGraph.m[k][0]-1)):
-                        m[i][j] = aGraph.m[k][2] 
-                        m[j][i] = aGraph.m[k][2] 
+                        m[i][j] = aGraph.m[k][2]
+                        m[j][i] = aGraph.m[k][2]
                         #print m[i][j]
 
-    
+
     solution_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".sol",'w')
 
-    global start_time 
+    global start_time
     start_time = time.time()
     cost, path = tsp(m,filename,cutoff)
     end_time = time.time()
     return path,cost, end_time-start_time
-    
+
 if __name__ == "__main__":
     BnB(sys.argv[1],sys.argv[2])

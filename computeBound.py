@@ -1,4 +1,4 @@
-
+#This file contains a helper function used by the branch and bound algorithm.
 
 def computeBound(self):
     '''
@@ -16,4 +16,4 @@ def computeBound(self):
                         short = self.state.get_dist(name1, name2)
         if short:
             shortest += short
-    return (shortest + self.pathLength)	
+    return (shortest + self.pathLength)

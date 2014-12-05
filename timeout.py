@@ -1,11 +1,14 @@
+# This file contains a helper function used to implement a cutoff time.
 from functools import wraps
 import errno
 import os
 import signal
 import sys
 
+
 class TimeoutError(Exception):
     pass
+
 
 def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     def decorator(func):

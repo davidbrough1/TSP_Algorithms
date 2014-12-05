@@ -33,7 +33,7 @@ def simulated_annealing(G, random_seed, file_name):
     temp_power = 1
     initial_state = _get_solution(G)
     trace_str = str((time.time() - t_start,
-                    int(_get_solution_weights(initial_state))))
+                     int(_get_solution_weights(initial_state))))
     trace.write(trace_str[1:-1] + '\n')
     state = initial_state
     solution_steady_state_count = 0

@@ -1,4 +1,4 @@
-#This file contains the code for the implementation of the MST approximation.
+# This file contains the code for the implementation of the MST approximation.
 import Queue as q
 import time
 import networkx as nx
@@ -71,9 +71,9 @@ def _get_path_edge_list(path_nodes, edge_list):
             node_i = path_nodes[i]
             node_i_plus = path_nodes[(i + 1) % n_nodes]
             if edge[0] == node_i and edge[1] == node_i_plus:
-                    path.append((edge[0], edge[1], edge[2]['weight']))
+                path.append((edge[0], edge[1], edge[2]['weight']))
             elif edge[1] == node_i and edge[0] == node_i_plus:
-                    path.append((edge[1], edge[0], edge[2]['weight']))
+                path.append((edge[1], edge[0], edge[2]['weight']))
     return path
 
 

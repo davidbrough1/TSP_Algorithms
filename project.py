@@ -1,5 +1,7 @@
-# This file contains code used to read in the files and generate the fully
-# connected graphs.
+'''
+This file contains code used to read in the files and generate the fully
+ connected graphs.
+'''
 from __future__ import division
 
 
@@ -29,7 +31,8 @@ class CSE6140Project(object):
         self.parameters['edge_weight_type'] = file_data[3][18:].rstrip()
         self.parameters['optimal_cost'] = file_data[4][14:].rstrip()
         self.parameters['header'] = file_data[5].rstrip()
-        self.m = [[100000 for i in range(int(self.parameters['dimensions']))] for j in range(int(self.parameters['dimensions']))]
+        self.m = [[100000 for i in range(int(self.parameters['dimensions']))] for j in range(
+            int(self.parameters['dimensions']))]
         node_locations = file_data[6:6 + int(self.parameters['dimensions'])]
         edge_weights = self._get_weights(node_locations,
                                          self.parameters['edge_weight_type'])
@@ -73,7 +76,7 @@ class CSE6140Project(object):
                         (self._radians(node_j[1]) + self._radians(node_i[1])))
 
                     weight = earth_r * math.acos(0.5 * ((1.0 + q1) * q2
-                                                 - (1.0 - q1) * q3)) + 1.0
+                                                        - (1.0 - q1) * q3)) + 1.0
                     edge_weights.append((node_j[0], node_i[0], int(weight)))
         return edge_weights
 
