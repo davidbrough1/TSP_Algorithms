@@ -14,7 +14,7 @@ class genetic_algorithm():
 		s.total_generations = 200
 		s.pop_size = 50
 		s.tournament_size = 6
-		s.mutation_rate = .15
+		s.mutation_rate = .015
 
 	def shuffle_tour(s):
 		arrangement = range(1, s.G.number_of_nodes()+1)
