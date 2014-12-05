@@ -54,7 +54,7 @@ def main(args):
     else:
         print "Incorrect Method Entered. The correct options are:\nGA, BnB, Greedy, SA, Approx"
 
-    with open('check/' + filename[:-4] + '_' + method + '_' + str(cutoff_time) + runID + '.sol', 'w') as solfile:
+    with open('./' + filename[:-4] + '_' + method + '_' + str(cutoff_time) + runID + '.sol', 'w') as solfile:
         solfile.write(str(int(cost)))
         solfile.write('\n')
         solfile.write(','.join([str(c) for c in tour]))

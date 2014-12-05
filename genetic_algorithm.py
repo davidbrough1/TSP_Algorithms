@@ -105,7 +105,7 @@ class genetic_algorithm():
 		current_best_cost = initial_cost
 		all_costs = []
 
-		with open('check/'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.trace','w') as fil:
+		with open('./'+filename[:-4]+'_'+method+'_'+str(cutoff_time)+runID+'.trace','w') as fil:
 
 			for i in xrange(s.total_generations):
 				cost = s.get_cost(s.find_fittest(population))
