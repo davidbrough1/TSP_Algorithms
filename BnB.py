@@ -79,7 +79,7 @@ def bestEdge(size, w, row, col):
 def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
     global best_cost
     
-    if(time.time()-start_time < cutoff):
+    if(float(time.time()-start_time) < float(cutoff)):
 
         colred = [0 for _ in xrange(n)]
         rowred = [0 for _ in xrange(n)]
@@ -96,11 +96,11 @@ def explore(n, w, edges, cost, row, col, best, fwdptr, backptr,filename,cutoff):
                 best[row[1]] = col[avoid]
                 best_cost = cost
                 
-                trace_file = open(filename+"_BnB"+"_"+str(cutoff)+".trace",'a')
+                trace_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".trace",'a')
                 trace_file.write(str(time.time()-start_time)+","+str(best_cost)+"\n")
                 trace_file.close()
 
-                solution_file = open(filename+"_BnB"+"_"+str(cutoff)+".sol",'w')
+                solution_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".sol",'w')
                 solution_file.write(str(best_cost)+"\n")
                 for i in range(len(best)):
                     solution_file.write(str(best[i])+",")
@@ -182,7 +182,7 @@ def BnB(filename,cutoff):
 
     aGraph = CSE6140Project()
     aGraph.load_file(filename)
-    trace_file = open(filename+"_BnB"+"_"+str(cutoff)+".trace",'w')
+    trace_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".trace",'w')
     trace_file.close()
     
 
@@ -200,7 +200,7 @@ def BnB(filename,cutoff):
                         #print m[i][j]
 
     
-    solution_file = open(filename+"_BnB"+"_"+str(cutoff)+".sol",'w')
+    solution_file = open(filename[:-4]+"_BnB"+"_"+str(cutoff)+".sol",'w')
 
     global start_time 
     start_time = time.time()
@@ -209,4 +209,4 @@ def BnB(filename,cutoff):
     return path,cost, end_time-start_time
     
 if __name__ == "__main__":
-    BnB()
+    BnB(sys.argv[1],sys.argv[2])
