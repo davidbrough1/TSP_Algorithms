@@ -1,3 +1,5 @@
+# This file contains the main wrapper function used to call the algorithms and
+# data files.
 import sys
 import getopt
 from genetic_algorithm import *

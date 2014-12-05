@@ -1,3 +1,4 @@
+#This file contains the code for the implementation of the MST approximation.
 import Queue as q
 import time
 import networkx as nx
@@ -7,6 +8,9 @@ from project import CSE6140Project
 
 
 def run_MSTApprox(filename, cutoff_time, random_seed):
+    '''
+    Helper function to integrate with TSP.py
+    '''
     project = CSE6140Project()
     project.load_file(filename)
     file_name = str(filename[:-4]) + '_Approx_' + str(cutoff_time) + \

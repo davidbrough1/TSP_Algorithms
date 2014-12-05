@@ -1,3 +1,4 @@
+# This file contains the code used for the simulated annealing algorithm.
 import time
 import random as random
 import math as math
@@ -7,6 +8,9 @@ from project import CSE6140Project
 
 
 def run_simulated_annealing(filename, cutoff_time, random_seed):
+    '''
+    Helper function used integrate with TSP.py
+    '''
     file_name = str(filename[:-4]) + '_LS2_' + str(cutoff_time) + \
         '_' + str(random_seed) + '.trace'
     if os.path.isfile(file_name):
@@ -18,6 +22,7 @@ def run_simulated_annealing(filename, cutoff_time, random_seed):
 
 def simulated_annealing(G, random_seed, file_name):
     '''
+    Main function used in simulated annealing algorithm.
     '''
     trace = open(file_name, 'a')
     t_start = time.time()

@@ -1,3 +1,5 @@
+# This file contains code used to read in the files and generate the fully
+# connected graphs.
 from __future__ import division
 
 
@@ -42,8 +44,6 @@ class CSE6140Project(object):
         '''
         tuple_node_locations = [(int(x.split()[0]), float(x.split()[1]),
                                  float(x.split()[2])) for x in node_locations]
-        # print tuple_node_locations
-        # raw_input("")
         if edge_weight_type[:3] == 'GEO':
             weights = self._get_geo_weights(tuple_node_locations)
         else:
