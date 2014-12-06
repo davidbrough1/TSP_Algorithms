@@ -25,7 +25,7 @@ class greedy():
         return cost
 
     def main(s, filename, method, random_seed, cutoff_time, runID, start_time):
-        with open('check/' + filename[:-4] + '_' + method + '_' + str(cutoff_time) + runID + '.trace', 'w') as fil:
+        with open('./' + filename[:-4] + '_' + method + '_' + str(cutoff_time) + runID + '.trace', 'w') as fil:
             start_node = s.nodes.pop(random.randint(0, len(s.nodes) - 1))
 
             s.tour.append(start_node)
