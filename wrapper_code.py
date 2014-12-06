@@ -1,3 +1,4 @@
+# This file contains code that was used to start the algorithms and provide a cutoff time.
 import sys, getopt
 from genetic_algorithm import *
 from greedy import *

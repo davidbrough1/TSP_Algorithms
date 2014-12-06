@@ -1,3 +1,4 @@
+# This code is used to create a graph from the input files.
 #!/usr/bin/python
 
 import string
@@ -10,7 +11,7 @@ CONVERT = 6378.388
 
 class Graph:
     def __init__(self, nodeNames,coord_type):
-       
+
         self.coord_type = coord_type
         self.nodeNames = nodeNames
         self.matrix = [None]* len(nodeNames)
@@ -51,7 +52,7 @@ class Graph:
               (x2, y2) = self.matrix[self.nodeNames.index(toNode)]
               self.cache[(fromNode,toNode)] = math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
-         
+
 
         else:
             (x1, y1) = self.matrix[self.nodeNames.index(fromNode)]
@@ -61,7 +62,7 @@ class Graph:
             q3 = math.cos( x1 + x2 )
             dij = int(( CONVERT * math.acos( 0.5*((1.0+q1)*q2 - (1.0-q1)*q3) ) + 1.0))
             self.cache[(fromNode,toNode)] = dij
-            
+
 	if self.cache.has_key((fromNode, toNode)):
               return self.cache[(fromNode, toNode)]
         else:
@@ -71,15 +72,15 @@ class Graph:
     def __str__(self):
         _FMT = '%10.10s'
 
-       
+
         result = _FMT % ' '
 
-       
+
         for name in self.nodeNames:
             result += _FMT % name
         result += '\n'
 
-       
+
         i = 0
         for nodeList in self.matrix:
             # Node name
@@ -110,7 +111,7 @@ def fromTSPFile(Filename):
 
     elif params['EDGE_WEIGHT_TYPE'] in ['EUC_2D','GEO']:
         input_graph = Graph(range(int(params['DIMENSION'])),params['EDGE_WEIGHT_TYPE'] )
-      
+
         for i in range(input_graph.size()):
             (num, x, y) = File.readline().split()
             input_graph.set_coordinates(i, (float(x), float(y)))
